@@ -1,0 +1,3 @@
+[submodule "werewolf_arena"]
+	path = werewolf_arena
+	url = https://github.com/google/werewolf_arena
