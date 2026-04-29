@@ -19,6 +19,8 @@ Run:
 
 import sys
 import os
+import re
+import openai
 
 _tracer_dir = os.environ.get('TRACER_DIR', '/Users/katyaogai/Tracer')
 sys.path.insert(0, _tracer_dir)
@@ -36,7 +38,7 @@ agent = ToyAgent(
 agent.imports = [
     "import os",
     "import re",
-    "import anthropic",
+    "import openai",
 ]
 
 # Hand: 10 + 6 = 16 vs dealer 7, cautious strategy → correct answer is STAND
@@ -45,7 +47,7 @@ agent.setup = """
         'hand_score': 16,
         'dealer_card': '7',
         'strategy': 'cautious',
-        'api_key': os.environ.get('ANTHROPIC_API_KEY', ''),
+        'api_key': os.environ.get('GROQ_API_KEY', ''),
         'prompt': None,
         'llm_response': None,
         'action': None,
@@ -76,13 +78,13 @@ def call_llm(state):
 
     Reads state['prompt']; adds state['llm_response'].
     """
-    client = anthropic.Anthropic(api_key=state['api_key'])
-    message = client.messages.create(
-        model='claude-haiku-4-5-20251001',
+    client = openai.OpenAI(api_key=state['api_key'], base_url='https://api.groq.com/openai/v1')
+    message = client.chat.completions.create(
+        model='llama-3.3-70b-versatile',
         max_tokens=300,
         messages=[{'role': 'user', 'content': state['prompt']}],
     )
-    state['llm_response'] = message.content[0].text
+    state['llm_response'] = message.choices[0].message.content
     return state
 
 
@@ -120,7 +122,7 @@ if __name__ == '__main__':
         initial = {
             **hand,
             'strategy': 'cautious',
-            'api_key': os.environ.get('ANTHROPIC_API_KEY', ''),
+            'api_key': os.environ.get('GROQ_API_KEY', ''),
             'prompt': None,
             'llm_response': None,
             'action': None,
