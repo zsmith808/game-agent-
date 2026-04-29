@@ -19,7 +19,7 @@ from typing import Any
 import google
 import vertexai
 from vertexai.preview import generative_models
-from anthropic import AnthropicVertex
+import anthropic
 
 
 def generate(model, **kwargs):
@@ -50,11 +50,7 @@ def generate_openai(model: str, prompt: str, json_mode: bool = True, **kwargs):
 
 # anthropic
 def generate_authropic(model: str, prompt: str, **kwargs):
-    # For local development, run `gcloud auth application-default login` first to
-    # create the application default credentials, which will be picked up
-    # automatically here.
-    _, project_id = google.auth.default()
-    client = AnthropicVertex(region="us-east5", project_id=project_id)
+    client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
     response = client.messages.create(
         model=model, messages=[{"role": "user", "content": prompt}], max_tokens=1024
