@@ -78,6 +78,7 @@ def call_llm(state):
 
     Reads state['prompt']; adds state['llm_response'].
     """
+    import openai
     client = openai.OpenAI(api_key=state['api_key'], base_url='https://api.groq.com/openai/v1')
     message = client.chat.completions.create(
         model='llama-3.3-70b-versatile',
@@ -97,6 +98,7 @@ def parse_action(state):
     that follows. Falls back to 'STAND' if no ACTION line is present.
     state['action'] should equal state['expected_action'].
     """
+    import re
     text = state['llm_response']
     # BUG: matches the FIRST occurrence of HIT/STAND anywhere in the text,
     # not the dedicated ACTION: line — picks up chain-of-thought words like
