@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avalon Game Viewer - Circular Layout</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #e0e0e0;
+            overflow: hidden;
+        }
+
+        #header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            gap: 20px;
+        }
+
+        #header h1 {
+            font-size: 24px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            white-space: nowrap;
+        }
+
+        #controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        #next-action {
+            display: inline-block;
+            background: rgba(100, 181, 246, 0.3);
+        }
+
+        #next-action:hover {
+            background: rgba(100, 181, 246, 0.4);
+        }
+
+        #new-game {
+            display: none;
+            background: rgba(76, 175, 80, 0.3);
+        }
+
+        #new-game:hover {
+            background: rgba(76, 175, 80, 0.4);
+        }
+
+        #game-status {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+        }
+
+        .status-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        .status-item .label {
+            font-size: 10px;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-item .value {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 4px;
+        }
+
+        #main-container {
+            display: flex;
+            height: calc(100vh - 70px);
+        }
+
+        #viewer-panel {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #game-circle {
+            position: relative;
+            width: 600px;
+            height: 600px;
+        }
+
+        .player-node {
+            position: absolute;
+            width: 120px;
+            height: 140px;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .player-node:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .player-node.selected {
+            z-index: 100;
+        }
+
+        .player-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .player-node:hover .player-avatar {
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .player-node.good .player-avatar {
+            background: linear-gradient(135deg, #1a237e, #283593);
+            border-color: #3f51b5;
+        }
+
+        .player-node.evil .player-avatar {
+            background: linear-gradient(135deg, #4a148c, #6a1b9);
+            border-color: #9c27b0;
+        }
+
+        .player-node.loyal .player-avatar {
+            background: linear-gradient(135deg, #1a237e, #283593);
+            border-color: #3f51b5;
+        }
+
+        .player-node.spy .player-avatar {
+            background: linear-gradient(135deg, #4a148c, #6a1b9);
+            border-color: #9c27b0;
+        }
+
+        .player-name {
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .player-role {
+            text-align: center;
+            font-size: 10px;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .player-team-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 9px;
+            margin-top: 4px;
+        }
+
+        .good .player-team-badge {
+            background: rgba(33, 150, 243, 0.3);
+            color: #64b5f6;
+        }
+
+        .evil .player-team-badge {
+            background: rgba(156, 39, 176, 0.3);
+            color: #ce93d8;
+        }
+
+        #center-info {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+        }
+
+        #round-display {
+            font-size: 48px;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        #phase-display {
+            font-size: 14px;
+            color: #aaa;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        #score-display {
+            margin-top: 20px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        #mission-progress {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .mission-slot {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .mission-slot.good {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4caf50;
+        }
+
+        .mission-slot.evil {
+            background: rgba(244, 67, 54, 0.3);
+            border-color: #f44336;
+        }
+
+        .leader-indicator {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.8));
+            animation: pulse 2s infinite;
+            z-index: 10;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.2); }
+        }
+
+        .team-indicator {
+            position: absolute;
+            bottom: 25px;
+            right: -5px;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #2196f3, #42a5f5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border: 2px solid #fff;
+            box-shadow: 0 0 10px rgba(33, 150, 243, 0.6);
+            z-index: 10;
+        }
+
+        .vote-indicator {
+            position: absolute;
+            top: 5px;
+            right: -5px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border: 2px solid #fff;
+            z-index: 10;
+        }
+
+        .vote-indicator.approve {
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.6);
+        }
+
+        .vote-indicator.reject {
+            background: linear-gradient(135deg, #f44336, #ef5350);
+            box-shadow: 0 0 10px rgba(244, 67, 54, 0.6);
+        }
+
+        #sidebar {
+            width: 400px;
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 4px;
+        }
+
+        #sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .chat-bubble {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+        }
+
+        .phase-label {
+            font-size: 10px;
+            color: #64b5f6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .content {
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        #log-panel {
+            width: 250px;
+            background: rgba(0, 0, 0, 0.2);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        #log-panel h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #aaa;
+        }
+
+        .log-entry {
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .log-entry:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .log-entry.active {
+            background: rgba(100, 181, 246, 0.2);
+            border-left: 3px solid #64b5f6;
+        }
+
+        .log-entry .phase {
+            color: #64b5f6;
+            font-weight: 600;
+        }
+
+        .log-entry .round {
+            color: #aaa;
+            font-size: 10px;
+            margin-left: 8px;
+        }
+
+        #winner-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            z-index: 1000;
+            transform: translateY(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        #winner-banner.show {
+            transform: translateY(0);
+        }
+
+        #winner-banner.good {
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+        }
+
+        #winner-banner.evil {
+            background: rgba(156, 39, 176, 0.9);
+            color: white;
+        }
+
+        #winner-text {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        #winner-detail {
+            font-size: 16px;
+            margin-top: 8px;
+            opacity: 0.9;
+        }
+
+        #dismiss-banner {
+            margin-top: 15px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            color: white;
+        }
+
+        #welcome-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #aaa;
+        }
+
+        #welcome-message .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h1>🎭 The Resistance: Avalon</h1>
+        <div id="controls">
+            <button id="next-action" class="btn">Next Action ▶</button>
+            <button id="new-game" class="btn">New Game 🔄</button>
+        </div>
+        <div id="game-status">
+            <div class="status-item">
+                <div class="label">Game ID</div>
+                <div class="value" id="game-id">--</div>
+            </div>
+            <div class="status-item">
+                <div class="label">Current Round</div>
+                <div class="value" id="current-round">--</div>
+            </div>
+            <div class="status-item">
+                <div class="label">Status</div>
+                <div class="value" id="game-status-text">Waiting...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-container">
+        <div id="log-panel">
+            <h3>Game Log</h3>
+            <div id="log-entries"></div>
+        </div>
+
+        <div id="viewer-panel">
+            <div id="game-circle">
+                <div id="center-info">
+                    <div id="round-display">--</div>
+                    <div id="phase-display">Waiting for game...</div>
+                    <div id="leader-display" style="margin-top: 12px; font-size: 14px; color: #ffd700;">
+                        Leader: <span id="leader-name">--</span>
+                    </div>
+                    <div id="mission-progress" style="margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
+                        <div class="mission-slot pending" id="mission-1">1</div>
+                        <div class="mission-slot pending" id="mission-2">2</div>
+                        <div class="mission-slot pending" id="mission-3">3</div>
+                        <div class="mission-slot pending" id="mission-4">4</div>
+                        <div class="mission-slot pending" id="mission-5">5</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="sidebar">
+            <div id="sidebar-header">
+                <div>
+                    <h2 id="sidebar-title">Game Viewer</h2>
+                    <div class="subtitle" id="sidebar-subtitle">Click a player to see their thoughts</div>
+                </div>
+            </div>
+            <div id="sidebar-content">
+                <div id="welcome-message">
+                    <div class="icon">💭</div>
+                    <div>Click "Next Action" to start the game</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="winner-banner">
+        <div id="winner-text"></div>
+        <div id="winner-detail"></div>
+        <button id="dismiss-banner" class="btn">Dismiss</button>
+    </div>
+
+    <script>
+        let gameData = null;
+        let selectedPlayer = null;
+        let lastUpdate = null;
+        let currentStep = 0;
+        let pollInterval = null;
+
+        // Initialize
+        const nextBtn = document.getElementById('next-action');
+        const newGameBtn = document.getElementById('new-game');
+        const dismissBtn = document.getElementById('dismiss-banner');
+
+        nextBtn.onclick = nextAction;
+        newGameBtn.onclick = newGame;
+        dismissBtn.onclick = dismissBanner;
+
+        // Load fresh HTML (no cache)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (!urlParams.has('v')) {
+            // Force reload with cache buster
+            urlParams.set('v', Date.now());
+            window.location.search = urlParams.toString();
+        }
+
+        startPolling();
+
+        function startPolling() {
+            stopPolling();
+            pollInterval = setInterval(fetchGameState, 1000);
+            fetchGameState();
+        }
+
+        function stopPolling() {
+            if (pollInterval) {
+                clearInterval(pollInterval);
+                pollInterval = null;
+            }
+        }
+
+        async function fetchGameState() {
+            try {
+                const url = '/game_state.json?t=' + Date.now() + '&r=' + Math.random();
+                const response = await fetch(url, {
+                    cache: 'no-cache',
+                    headers: { 'Cache-Control': 'no-cache' }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.players) {
+                        console.log('Game state fetched:', data.current_round, data.game_log?.length);
+                        updateGameState(data);
+                    }
+                } else {
+                    console.log('fetchGameState: response not ok', response.status);
+                }
+            } catch (e) {
+                console.log('fetchGameState error:', e);
+            }
+        }
+
+        function dismissBanner() {
+            document.getElementById('winner-banner').classList.remove('show');
+        }
+
+        function updateGameState(data) {
+            if (JSON.stringify(data) === lastUpdate) return;
+            lastUpdate = JSON.stringify(data);
+            gameData = data;
+
+            // Update currentStep to show all log entries up to now
+            currentStep = (data.game_log || []).length;
+
+             // Update header
+             document.getElementById('game-id').textContent = data.game_id || '--';
+             document.getElementById('current-round').textContent = data.current_round || '--';
+
+             // Update leader display
+             const leaderIndex = data.mission_leader || 0;
+             const leaderName = (data.players && data.players[leaderIndex]) ? data.players[leaderIndex].name : '--';
+             document.getElementById('leader-name').textContent = leaderName;
+
+             // Update center display
+            const round = getCurrentRound();
+            document.getElementById('round-display').textContent = round > 0 ? `Round ${round}` : '--';
+
+            // Update mission progress
+            updateMissionProgress(data.game_log || [], currentStep);
+
+            // Update players
+            renderPlayers(data.players || [], currentStep);
+
+            // Update game log
+            renderGameLog(data.game_log || [], currentStep);
+
+            // Update sidebar if player selected
+            if (selectedPlayer) {
+                renderPlayerDetails(selectedPlayer, data, currentStep);
+            }
+
+            // Check for winner - show New Game button
+            if (data.winner) {
+                showWinner(data.winner, data);
+                document.getElementById('new-game').style.display = 'inline-block';
+            } else {
+                document.getElementById('winner-banner').classList.remove('show');
+                document.getElementById('new-game').style.display = 'none';
+            }
+
+            // Update status
+            const statusText = data.winner ? 'Game Over' : 'In Progress';
+            document.getElementById('game-status-text').textContent = statusText;
+
+            // Update phase display
+            const phase = getCurrentPhase(gameData.game_log || [], currentStep);
+            document.getElementById('phase-display').textContent = phase;
+        }
+
+        function updateMissionProgress(gameLog, upToStep) {
+            // Reset all slots
+            for (let i = 1; i <= 5; i++) {
+                const slot = document.getElementById(`mission-${i}`);
+                slot.className = 'mission-slot pending';
+                slot.textContent = i;
+            }
+
+            const stepCount = upToStep !== undefined ? upToStep : gameLog.length;
+            for (let i = 0; i < stepCount; i++) {
+                const log = gameLog[i];
+                if (log.phase === 'mission' && log.round) {
+                    const slot = document.getElementById(`mission-${log.round}`);
+                    if (slot) {
+                        if (log.passed) {
+                            slot.className = 'mission-slot good';
+                            slot.textContent = '✓';
+                        } else {
+                            slot.className = 'mission-slot evil';
+                            slot.textContent = '✗';
+                        }
+                    }
+                }
+            }
+        }
+
+        function renderPlayers(players, step) {
+            const circle = document.getElementById('game-circle');
+            const oldNodes = circle.querySelectorAll('.player-node');
+            oldNodes.forEach(n => n.remove());
+
+            const centerX = 300;
+            const centerY = 300;
+            const radius = 220;
+            const count = players.length;
+
+            // Get current leader and team
+            const leaderIndex = gameData ? gameData.mission_leader % players.length : -1;
+            const currentPhase = getCurrentPhase(gameData.game_log || [], step);
+            const currentTeam = getCurrentTeam(currentPhase);
+            const currentVotes = getCurrentVotes(currentPhase);
+
+            players.forEach((player, index) => {
+                const angle = (2 * Math.PI * index / count) - Math.PI / 2;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+
+                const node = document.createElement('div');
+                node.className = `player-node ${player.team || 'good'}`;
+                if (player.role === 'Loyal Servant') node.className += ' loyal';
+                if (player.role === 'Spy') node.className += ' spy';
+                if (index === leaderIndex) node.className += ' leader';
+                if (currentTeam.includes(player.name)) node.className += ' on-team';
+                node.style.left = `${x}px`;
+                node.style.top = `${y}px`;
+                node.onclick = () => selectPlayer(player, node);
+
+                // Leader indicator
+                if (index === leaderIndex) {
+                    const leaderBadge = document.createElement('div');
+                    leaderBadge.className = 'leader-indicator';
+                    leaderBadge.textContent = '👑';
+                    leaderBadge.title = 'Mission Leader';
+                    node.appendChild(leaderBadge);
+                }
+
+                const avatar = document.createElement('div');
+                avatar.className = 'player-avatar';
+                avatar.textContent = getAvatarEmoji(player.role);
+                node.appendChild(avatar);
+
+                // Team member indicator (only show during proposal/discussion/vote phases)
+                if (currentTeam.includes(player.name)) {
+                    const teamBadge = document.createElement('div');
+                    teamBadge.className = 'team-indicator';
+                    teamBadge.textContent = '👥';
+                    teamBadge.title = 'On proposed team';
+                    node.appendChild(teamBadge);
+                }
+
+                // Vote indicator (shown during/after voting phase)
+                const vote = currentVotes[player.name];
+                if (vote) {
+                    const voteBadge = document.createElement('div');
+                    voteBadge.className = `vote-indicator ${vote}`;
+                    voteBadge.textContent = vote === 'approve' ? '✓' : '✗';
+                    voteBadge.title = `Voted: ${vote.toUpperCase()}`;
+                    node.appendChild(voteBadge);
+                }
+
+                const name = document.createElement('div');
+                name.className = 'player-name';
+                name.textContent = player.name;
+                node.appendChild(name);
+
+                const role = document.createElement('div');
+                role.className = 'player-role';
+                role.textContent = player.role || 'Unknown';
+                node.appendChild(role);
+
+                const badge = document.createElement('div');
+                badge.className = 'player-team-badge';
+                badge.textContent = player.team ? player.team.toUpperCase() : '?';
+                node.appendChild(badge);
+
+                circle.appendChild(node);
+            });
+        }
+
+        function getCurrentTeam(currentPhase) {
+            if (!gameData) return [];
+            // Only show team badges during proposal, discussion, and vote phases
+            if (!['proposal', 'discussion', 'vote'].includes(currentPhase)) return [];
+            const logs = gameData.game_log || [];
+            const step = currentStep;
+            // Look backwards through logs for the most recent proposal
+            for (let i = step - 1; i >= 0; i--) {
+                if (logs[i] && logs[i].phase === 'proposal') {
+                    return logs[i].team || [];
+                }
+            }
+            return [];
+        }
+
+        function getCurrentVotes(currentPhase) {
+            if (!gameData) return {};
+            // Only show vote badges during vote phase
+            if (currentPhase !== 'vote') return {};
+            const logs = gameData.game_log || [];
+            const step = currentStep;
+            // Look backwards through logs for the most recent vote
+            for (let i = step - 1; i >= 0; i--) {
+                if (logs[i] && logs[i].phase === 'vote') {
+                    return logs[i].votes || {};
+                }
+            }
+            return {};
+        }
+
+        function getCurrentRound() {
+            if (!gameData) return 0;
+            const logs = gameData.game_log || [];
+            // Get round from the latest log entry
+            for (let i = currentStep - 1; i >= 0; i--) {
+                if (logs[i] && logs[i].round) {
+                    return logs[i].round;
+                }
+            }
+            return 0;
+        }
+
+        function selectPlayer(player, nodeElement) {
+            selectedPlayer = player;
+            document.querySelectorAll('.player-node').forEach(n => n.classList.remove('selected'));
+            nodeElement.classList.add('selected');
+            renderPlayerDetails(player, gameData, currentStep);
+        }
+
+        function renderPlayerDetails(player, data, upToStep) {
+            const title = document.getElementById('sidebar-title');
+            const subtitle = document.getElementById('sidebar-subtitle');
+            const content = document.getElementById('sidebar-content');
+
+            title.textContent = `${player.name} (${player.role})`;
+            subtitle.textContent = `${player.team.toUpperCase()} TEAM • ${player.model || 'Unknown model'}`;
+
+            let html = '';
+            const logs = (data.game_log || []).slice(0, upToStep);
+
+            logs.forEach(log => {
+                const phase = log.phase;
+                const round = log.round || '?';
+                let text = '';
+
+                if (phase === 'discussion') {
+                    const content = log.content || [];
+                    const entry = content.find(d => d.player === player.name);
+                    if (entry) text = entry.text || '';
+                } else if (phase === 'proposal') {
+                    if (log.leader === player.name) {
+                        const team = (log.team || []).join(', ');
+                        const reasoning = log.reasoning || '';
+                        text = `Proposed team: ${team}\n${reasoning}`;
+                    }
+                } else if (phase === 'vote') {
+                    const votes = log.votes || {};
+                    const reasoning = log.reasoning || {};
+                    const voteVal = votes[player.name];
+                    if (voteVal) {
+                        text = `Voted: ${voteVal.toUpperCase()}\n${reasoning[player.name] || ''}`;
+                    }
+                } else if (phase === 'mission') {
+                    const results = log.results || [];
+                    const entry = results.find(r => r.player === player.name);
+                    if (entry) {
+                        text = `Action: ${entry.action?.toUpperCase() || '?'}\n${entry.reasoning || ''}`;
+                    }
+                }
+                if (text) {
+                    html += `
+                        <div class="chat-bubble">
+                            <div class="phase-label">${phase} - Round ${round}</div>
+                            <div class="content">${text.replace(/\n/g, '<br>')}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            if (!html) {
+                html = `
+                    <div id="welcome-message">
+                        <div class="icon">💭</div>
+                        <div>No activity yet for ${player.name}</div>
+                        <div style="margin-top: 8px; font-size: 11px;">Go to next step to see activity...</div>
+                    </div>
+                `;
+            }
+
+            content.innerHTML = html;
+            content.scrollTop = content.scrollHeight;
+        }
+
+        function renderGameLog(logs, upToStep) {
+            const container = document.getElementById('log-entries');
+            const stepCount = upToStep !== undefined ? upToStep : logs.length;
+
+            container.innerHTML = logs.slice(0, stepCount).map((log, idx) => {
+                const phase = log.phase || 'unknown';
+                const round = log.round || '?';
+                const isActive = idx === stepCount - 1;
+                return `
+                    <div class="log-entry ${isActive ? 'active' : ''}" data-idx="${idx}">
+                        <span class="phase">${phase}</span>
+                        <span class="round"> (Round ${round})</span>
+                    </div>
+                `;
+            }).join('');
+
+            // Add click handlers
+            container.querySelectorAll('.log-entry').forEach(el => {
+                el.onclick = () => {
+                    const idx = parseInt(el.dataset.idx);
+                    currentStep = idx + 1;
+                    renderToStep(currentStep);
+                };
+            });
+
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function getAvatarEmoji(role) {
+            const emojis = {
+                'Loyal Servant': '🛡️',
+                'Spy': '🕵️'
+            };
+            return emojis[role] || '👤';
+        }
+
+        function getCurrentPhase(logs, upToStep) {
+            const stepCount = upToStep !== undefined ? upToStep : logs.length;
+            if (!stepCount) return 'Waiting...';
+            const last = logs[stepCount - 1];
+            return last.phase || 'Unknown';
+        }
+
+        function showWinner(winner, data) {
+            const banner = document.getElementById('winner-banner');
+            const text = document.getElementById('winner-text');
+            const detail = document.getElementById('winner-detail');
+
+            banner.className = `show ${winner}`;
+            text.textContent = winner.toUpperCase() + ' WINS!';
+
+            if (winner === 'good') {
+                detail.textContent = 'Good completed 3 missions!';
+            } else {
+                detail.textContent = 'Evil completed 3 missions!';
+            }
+
+            // Auto-dismiss after 10 seconds
+            setTimeout(() => {
+                banner.classList.remove('show');
+            }, 10000);
+        }
+
+        function nextAction() {
+            if (!gameData || !gameData.game_log) return;
+
+            // If we've shown all current actions, tell server to proceed
+            if (currentStep >= gameData.game_log.length) {
+                fetch('/next_action').then(() => {
+                    // Wait a bit then fetch new state
+                    setTimeout(fetchGameState, 500);
+                });
+            } else {
+                currentStep++;
+                renderToStep(currentStep);
+            }
+        }
+
+        function renderToStep(step) {
+            currentStep = step;
+            renderPlayers(gameData.players || [], step);
+            renderGameLog(gameData.game_log || [], step);
+            if (selectedPlayer) {
+                renderPlayerDetails(selectedPlayer, gameData, step);
+            }
+            const phase = getCurrentPhase(gameData.game_log || [], step);
+            document.getElementById('phase-display').textContent = phase;
+        }
+
+        async function newGame() {
+            if (!confirm('Start a new game? This will clear all current game data.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/new_game');
+                if (response.ok) {
+                    // Reset UI
+                    currentStep = 0;
+                    gameData = null;
+                    lastUpdate = null;
+                    selectedPlayer = null;
+
+                    // Clear player circle
+                    const circle = document.getElementById('game-circle');
+                    circle.querySelectorAll('.player-node').forEach(n => n.remove());
+
+                    // Reset displays
+                    document.getElementById('game-id').textContent = '--';
+                    document.getElementById('current-round').textContent = '--';
+                    document.getElementById('round-display').textContent = '--';
+                    document.getElementById('leader-name').textContent = '--';
+                    document.getElementById('game-status-text').textContent = 'Waiting...';
+                    document.getElementById('log-entries').innerHTML = '';
+                    document.getElementById('sidebar-title').textContent = 'Game Viewer';
+                    document.getElementById('sidebar-subtitle').textContent = 'Click a player to see their thoughts';
+                    document.getElementById('sidebar-content').innerHTML = '';
+
+                    alert('New game ready! The game will restart automatically.');
+                }
+            } catch (e) {
+                alert('Error starting new game: ' + e.message);
+            }
+        }
+    </script>
+</body>
+</html>

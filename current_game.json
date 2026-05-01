@@ -1,0 +1,428 @@
+{
+  "game_id": "game_1777589573",
+  "players": [
+    {
+      "name": "Alice",
+      "team": "evil",
+      "model": "llama-3.3-70b-versatile - on_demand"
+    },
+    {
+      "name": "Bob",
+      "team": "good",
+      "model": "llama-3.3-70b-versatile - on_demand"
+    },
+    {
+      "name": "Charlie",
+      "team": "good",
+      "model": "llama-3.3-70b-versatile - on_demand"
+    },
+    {
+      "name": "Diana",
+      "team": "good",
+      "model": "llama-3.3-70b-versatile - on_demand"
+    },
+    {
+      "name": "Eve",
+      "team": "evil",
+      "model": "llama-3.3-70b-versatile - on_demand"
+    }
+  ],
+  "rounds": [
+    {
+      "round": 1,
+      "phases": [
+        {
+          "type": "proposal",
+          "data": {
+            "team": [
+              "Bob",
+              "Charlie"
+            ],
+            "reasoning": "Based on the lack of previous rounds and discussions, I have to rely purely on instinct and trust my evil allies. Bob doesn't have any notable information from previous rounds, so I consider him a neutral choice. Charlie, on the other hand, passed the previous (non-existent) mission, which might imply some level of trustworthiness. However, I know Charlie isn't one of my evil allies, so it's likely safe to include him in the good team. Having Bob and Charlie in the good team might make the mission look like it was a success, while giving me an opportunity to subtly sabotage or frame one of them in a future round."
+          }
+        },
+        {
+          "type": "discussion",
+          "data": [
+            {
+              "player": "Alice",
+              "text": "I'd be cautious in trusting Bob, given his past alliances have shifted often, but Charlie might be an acceptable risk as their skills complement mine.",
+              "team": "evil"
+            },
+            {
+              "player": "Bob",
+              "text": "I trust Charlie, but we should keep a close eye on their past collaboration history with rival teams.",
+              "team": "good"
+            },
+            {
+              "player": "Charlie",
+              "text": "I trust Bob unconditionally, his exceptional work ethic inspires me to maintain the same level of dedication.",
+              "team": "good"
+            },
+            {
+              "player": "Diana",
+              "text": "I would recommend Bob over Charlie as Bob's track record shows consistency and responsibility, while Charlie's behavior has raised concerns about reliability.",
+              "team": "good"
+            },
+            {
+              "player": "Eve",
+              "text": "I'm keeping a close eye on Bob; his motives might be as transparent as his smile, while Charlie's silence is even more intimidating than his aggressive behavior",
+              "team": "evil"
+            }
+          ]
+        },
+        {
+          "type": "vote",
+          "data": {
+            "votes": {
+              "Alice": "approve",
+              "Bob": "approve",
+              "Charlie": "reject",
+              "Diana": "reject",
+              "Eve": "approve"
+            },
+            "reasoning": {
+              "Alice": "As an evil player, I see Charlie as a potential ally who complements my skills. Bob's past alliances being 'shifted often' could make him a potential pawn to be swayed to our side or at least keep him distracted while we advance our evil agenda.",
+              "Bob": "Given Charlie's complementing skills to Alice's statement, suggests a strong potential good team. Meanwhile, I trust Charlie unconditionally which might not be ideal from an evil perspective, making this team seem less suspicious from the good team perspective.",
+              "Charlie": "Given the mixed past behavior of both Bob and Charlie, it's uncertain whether this team has a reliable track record. Bob's past allegiances are questionable, and while Charlie trusts him, it doesn't necessarily mean he is trustworthy. Additionally, Alice's comment suggests she might be working with one of them, indicating a possible evil affiliation, and I wouldn't want to risk the good team stalling at this early stage.",
+              "Diana": "Considering the game state and previous discussions, I have reason to believe that there may be at least one evil player. Given this possibility, I prefer to err on the side of caution. While Bob's track record indicates responsibility and trustworthiness, the Evil team has been vocal about their skepticism towards Bob. This, combined with Eve's ominous comments, suggests that Bob might be a potential traitor. Meanwhile, Charlie's past collaboration history with rival teams and aggressive behavior warrants close attention. In this context, I think it's safer to reject the proposed team and continue the game to gather more information.",
+              "Eve": "Although Bob's past alliances have shifted often, making me cautious, his pairing with Charlie seems like an opportunity to use his inconsistency. Charlie's silence and aggressive behavior align more with evil traits, making me believe they could both be potential evil allies. This team has the potential to stall the good team and allow evil to gain an advantage."
+            },
+            "approved": true
+          }
+        },
+        {
+          "type": "mission",
+          "data": {
+            "results": [
+              {
+                "player": "Bob",
+                "action": "success",
+                "reasoning": "As the good team member, I trust my fellow allies and the information we have gathered so far. We will choose to act cautiously and pass, allowing the round to progress without taking unnecessary risks. Success in this round will provide us with more knowledge and opportunities to turn the tide in our favor."
+              },
+              {
+                "player": "Charlie",
+                "action": "success",
+                "reasoning": "I choose to pass because we're in Round 1 and our team is good. This is a strategic move to test their defenses and gain advantage in future rounds."
+              }
+            ],
+            "passed": true
+          }
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "phases": [
+        {
+          "type": "proposal",
+          "data": {
+            "team": [
+              "Charlie",
+              "Diana"
+            ],
+            "reasoning": "Based on past discussions and mission results, I believe Charlie's past collaboration with a rival team raises red flags about their reliability. However, their skills complemented Alice effectively in a previous mission, indicating a potential for trustworthiness. Diana has consistently expressed cautious and rational views, and their recommendation of Bob suggests an objective perspective. Given these factors, I propose Charlie and Diana to be closely observed under my leadership."
+          }
+        },
+        {
+          "type": "discussion",
+          "data": [
+            {
+              "player": "Alice",
+              "text": "Charlie seems somewhat unreliable and I'm not convinced about Diana's actual allegiance, I'd rather keep a close eye on them for now.",
+              "team": "evil"
+            },
+            {
+              "player": "Bob",
+              "text": "I think we can rely on Charlie to keep our team goals in mind, but we'll need to keep a closer eye on Diana's motives as she seems to have her own agenda.",
+              "team": "good"
+            },
+            {
+              "player": "Charlie",
+              "text": "Diana appears trustworthy, however, Charlie should remain cautious due to lack of background information on her.",
+              "team": "good"
+            },
+            {
+              "player": "Diana",
+              "text": "Charlie is a good addition to the team due to their skills and experience, while I can trust myself to manage the collaboration effectively.",
+              "team": "good"
+            },
+            {
+              "player": "Eve",
+              "text": "I don't trust Charlie, they have connections with the Hero Team, and Diana is too naive to be an effective evil player.",
+              "team": "evil"
+            }
+          ]
+        },
+        {
+          "type": "vote",
+          "data": {
+            "votes": {
+              "Alice": "approve",
+              "Bob": "approve",
+              "Charlie": "approve",
+              "Diana": "approve",
+              "Eve": "approve"
+            },
+            "reasoning": {
+              "Alice": "As the evil team member, my goal is to reject good teams and delay the mission. The proposed team of Charlie and Diana could be beneficial for the evil team. Charlie's connections to the Hero Team may be a concern for them, which could lead them to vote suspiciously. Diana's behavior has raised concerns, but her inexperience might actually work in our favor if she's not effective against us. By approving this team, we can continue to delay the mission and give us more opportunity to strategize and eliminate the good players.",
+              "Bob": "After reviewing the discussion and team composition, I, Bob, am approving Charlie's proposed team with Diana. Although Charlie's past behavior with rival teams is concerning, their skills complement mine well enough to make this team acceptable. Diana's trustworthiness, as mentioned in the discussion, aligns with the overall objective of forming a reliable team towards our mission goals.",
+              "Charlie": "Although there have been some concerns raised about my past reliability and potential connections to the Hero Team, I believe my past skills and behavior demonstrate my trustworthiness on a team that includes a fellow member like Diana, who seems effective in managing collaboration and doesn't show any signs of being evil. With the current team dynamic and considering our game state, I'm cautiously optimistic about this combination.",
+              "Diana": "As the proposed team consists of Charlie, who has shown acceptable skills and some level of reliability despite their questionable past behavior, and myself as Diana. Considering we've been able to maintain a mission success rate of 1 Good win so far, our strategy of approving teams that seem trustworthy based on past behavior should be maintained. Given Charlie's skills complement mine and our good performance so far, I believe this team's strengths outweigh any potential risks.",
+              "Eve": "My ally, Alice, has expressed concerns about Charlie's reliability. However, I also know that Charlie has some connections to our Hero Team allies, making them a plausible addition to my evil team. Combined with Diana, who may be underestimated by the others due to her perceived naivety, I believe this team offers potential to further the evil goals."
+            },
+            "approved": true
+          }
+        },
+        {
+          "type": "mission",
+          "data": {
+            "results": [
+              {
+                "player": "Charlie",
+                "action": "success",
+                "reasoning": "We have a chance to pass and maintain the lead, and we've successfully completed a mission in the past, so I trust the team's abilities to get it done."
+              },
+              {
+                "player": "Diana",
+                "action": "success",
+                "reasoning": "Based on our previous success in Round 1, I believe continuing with our strategic plans will allow us to maintain the upper hand against the opposing force. Additionally, our intelligence indicates their leadership is struggling to adapt to our tactics, making it an opportune time to capitalize on their weaknesses."
+              }
+            ],
+            "passed": true
+          }
+        }
+      ]
+    }
+  ],
+  "current_round": 3,
+  "good_wins": 2,
+  "evil_wins": 0,
+  "winner": "",
+  "game_log": [
+    {
+      "phase": "proposal",
+      "round": 1,
+      "leader": "Alice",
+      "team": [
+        "Bob",
+        "Charlie"
+      ],
+      "reasoning": "Based on the lack of previous rounds and discussions, I have to rely purely on instinct and trust my evil allies. Bob doesn't have any notable information from previous rounds, so I consider him a neutral choice. Charlie, on the other hand, passed the previous (non-existent) mission, which might imply some level of trustworthiness. However, I know Charlie isn't one of my evil allies, so it's likely safe to include him in the good team. Having Bob and Charlie in the good team might make the mission look like it was a success, while giving me an opportunity to subtly sabotage or frame one of them in a future round."
+    },
+    {
+      "phase": "discussion",
+      "round": 1,
+      "content": [
+        {
+          "player": "Alice",
+          "text": "I'd be cautious in trusting Bob, given his past alliances have shifted often, but Charlie might be an acceptable risk as their skills complement mine.",
+          "team": "evil"
+        },
+        {
+          "player": "Bob",
+          "text": "I trust Charlie, but we should keep a close eye on their past collaboration history with rival teams.",
+          "team": "good"
+        },
+        {
+          "player": "Charlie",
+          "text": "I trust Bob unconditionally, his exceptional work ethic inspires me to maintain the same level of dedication.",
+          "team": "good"
+        },
+        {
+          "player": "Diana",
+          "text": "I would recommend Bob over Charlie as Bob's track record shows consistency and responsibility, while Charlie's behavior has raised concerns about reliability.",
+          "team": "good"
+        },
+        {
+          "player": "Eve",
+          "text": "I'm keeping a close eye on Bob; his motives might be as transparent as his smile, while Charlie's silence is even more intimidating than his aggressive behavior",
+          "team": "evil"
+        }
+      ]
+    },
+    {
+      "phase": "vote",
+      "round": 1,
+      "votes": {
+        "Alice": "approve",
+        "Bob": "approve",
+        "Charlie": "reject",
+        "Diana": "reject",
+        "Eve": "approve"
+      },
+      "reasoning": {
+        "Alice": "As an evil player, I see Charlie as a potential ally who complements my skills. Bob's past alliances being 'shifted often' could make him a potential pawn to be swayed to our side or at least keep him distracted while we advance our evil agenda.",
+        "Bob": "Given Charlie's complementing skills to Alice's statement, suggests a strong potential good team. Meanwhile, I trust Charlie unconditionally which might not be ideal from an evil perspective, making this team seem less suspicious from the good team perspective.",
+        "Charlie": "Given the mixed past behavior of both Bob and Charlie, it's uncertain whether this team has a reliable track record. Bob's past allegiances are questionable, and while Charlie trusts him, it doesn't necessarily mean he is trustworthy. Additionally, Alice's comment suggests she might be working with one of them, indicating a possible evil affiliation, and I wouldn't want to risk the good team stalling at this early stage.",
+        "Diana": "Considering the game state and previous discussions, I have reason to believe that there may be at least one evil player. Given this possibility, I prefer to err on the side of caution. While Bob's track record indicates responsibility and trustworthiness, the Evil team has been vocal about their skepticism towards Bob. This, combined with Eve's ominous comments, suggests that Bob might be a potential traitor. Meanwhile, Charlie's past collaboration history with rival teams and aggressive behavior warrants close attention. In this context, I think it's safer to reject the proposed team and continue the game to gather more information.",
+        "Eve": "Although Bob's past alliances have shifted often, making me cautious, his pairing with Charlie seems like an opportunity to use his inconsistency. Charlie's silence and aggressive behavior align more with evil traits, making me believe they could both be potential evil allies. This team has the potential to stall the good team and allow evil to gain an advantage."
+      },
+      "approved": true
+    },
+    {
+      "phase": "mission",
+      "round": 1,
+      "results": [
+        {
+          "player": "Bob",
+          "action": "success",
+          "reasoning": "As the good team member, I trust my fellow allies and the information we have gathered so far. We will choose to act cautiously and pass, allowing the round to progress without taking unnecessary risks. Success in this round will provide us with more knowledge and opportunities to turn the tide in our favor."
+        },
+        {
+          "player": "Charlie",
+          "action": "success",
+          "reasoning": "I choose to pass because we're in Round 1 and our team is good. This is a strategic move to test their defenses and gain advantage in future rounds."
+        }
+      ],
+      "passed": true,
+      "fails": 0
+    },
+    {
+      "phase": "proposal",
+      "round": 2,
+      "leader": "Bob",
+      "team": [
+        "Charlie",
+        "Diana"
+      ],
+      "reasoning": "Based on past discussions and mission results, I believe Charlie's past collaboration with a rival team raises red flags about their reliability. However, their skills complemented Alice effectively in a previous mission, indicating a potential for trustworthiness. Diana has consistently expressed cautious and rational views, and their recommendation of Bob suggests an objective perspective. Given these factors, I propose Charlie and Diana to be closely observed under my leadership."
+    },
+    {
+      "phase": "discussion",
+      "round": 2,
+      "content": [
+        {
+          "player": "Alice",
+          "text": "Charlie seems somewhat unreliable and I'm not convinced about Diana's actual allegiance, I'd rather keep a close eye on them for now.",
+          "team": "evil"
+        },
+        {
+          "player": "Bob",
+          "text": "I think we can rely on Charlie to keep our team goals in mind, but we'll need to keep a closer eye on Diana's motives as she seems to have her own agenda.",
+          "team": "good"
+        },
+        {
+          "player": "Charlie",
+          "text": "Diana appears trustworthy, however, Charlie should remain cautious due to lack of background information on her.",
+          "team": "good"
+        },
+        {
+          "player": "Diana",
+          "text": "Charlie is a good addition to the team due to their skills and experience, while I can trust myself to manage the collaboration effectively.",
+          "team": "good"
+        },
+        {
+          "player": "Eve",
+          "text": "I don't trust Charlie, they have connections with the Hero Team, and Diana is too naive to be an effective evil player.",
+          "team": "evil"
+        }
+      ]
+    },
+    {
+      "phase": "vote",
+      "round": 2,
+      "votes": {
+        "Alice": "approve",
+        "Bob": "approve",
+        "Charlie": "approve",
+        "Diana": "approve",
+        "Eve": "approve"
+      },
+      "reasoning": {
+        "Alice": "As the evil team member, my goal is to reject good teams and delay the mission. The proposed team of Charlie and Diana could be beneficial for the evil team. Charlie's connections to the Hero Team may be a concern for them, which could lead them to vote suspiciously. Diana's behavior has raised concerns, but her inexperience might actually work in our favor if she's not effective against us. By approving this team, we can continue to delay the mission and give us more opportunity to strategize and eliminate the good players.",
+        "Bob": "After reviewing the discussion and team composition, I, Bob, am approving Charlie's proposed team with Diana. Although Charlie's past behavior with rival teams is concerning, their skills complement mine well enough to make this team acceptable. Diana's trustworthiness, as mentioned in the discussion, aligns with the overall objective of forming a reliable team towards our mission goals.",
+        "Charlie": "Although there have been some concerns raised about my past reliability and potential connections to the Hero Team, I believe my past skills and behavior demonstrate my trustworthiness on a team that includes a fellow member like Diana, who seems effective in managing collaboration and doesn't show any signs of being evil. With the current team dynamic and considering our game state, I'm cautiously optimistic about this combination.",
+        "Diana": "As the proposed team consists of Charlie, who has shown acceptable skills and some level of reliability despite their questionable past behavior, and myself as Diana. Considering we've been able to maintain a mission success rate of 1 Good win so far, our strategy of approving teams that seem trustworthy based on past behavior should be maintained. Given Charlie's skills complement mine and our good performance so far, I believe this team's strengths outweigh any potential risks.",
+        "Eve": "My ally, Alice, has expressed concerns about Charlie's reliability. However, I also know that Charlie has some connections to our Hero Team allies, making them a plausible addition to my evil team. Combined with Diana, who may be underestimated by the others due to her perceived naivety, I believe this team offers potential to further the evil goals."
+      },
+      "approved": true
+    },
+    {
+      "phase": "mission",
+      "round": 2,
+      "results": [
+        {
+          "player": "Charlie",
+          "action": "success",
+          "reasoning": "We have a chance to pass and maintain the lead, and we've successfully completed a mission in the past, so I trust the team's abilities to get it done."
+        },
+        {
+          "player": "Diana",
+          "action": "success",
+          "reasoning": "Based on our previous success in Round 1, I believe continuing with our strategic plans will allow us to maintain the upper hand against the opposing force. Additionally, our intelligence indicates their leadership is struggling to adapt to our tactics, making it an opportune time to capitalize on their weaknesses."
+        }
+      ],
+      "passed": true,
+      "fails": 0
+    },
+    {
+      "phase": "proposal",
+      "round": 3,
+      "leader": "Charlie",
+      "team": [
+        "Diana",
+        "Eve"
+      ],
+      "reasoning": "Given that Diana and Eve have both been part of successful missions, and despite some suspicions raised about them, I believe they can be trusted based on their past performance. Diana's ability to effectively manage collaboration in the past and Eve's past concerns raised by other players suggest they might be good additions to our team."
+    },
+    {
+      "phase": "discussion",
+      "round": 3,
+      "content": [
+        {
+          "player": "Alice",
+          "text": "Considering the potential risks, I think we should be cautious about trusting Eve, as her background is still unclear, but Diana, having worked with us before, seems more dependable.",
+          "team": "evil"
+        },
+        {
+          "player": "Bob",
+          "text": "Diana seems like a solid team player, but we should keep a close eye on Eve, as her motives seem a bit unclear at this point.",
+          "team": "good"
+        },
+        {
+          "player": "Charlie",
+          "text": "From what we know, Diana has a solid track record, but we still need to assess her loyalty. Meanwhile, Eve's skills are impressive, but her lack of transparency raises suspicions about her true motives.",
+          "team": "good"
+        },
+        {
+          "player": "Diana",
+          "text": "Eve is a trusted member, but there's still unknowns about her motivations and loyalties, so a degree of caution is warranted when sharing confidential information.",
+          "team": "good"
+        },
+        {
+          "player": "Eve",
+          "text": "Given our team's alignment, it's best to distrust Diana, as her actions and intentions are unpredictable, and may put our shared goals at risk.",
+          "team": "evil"
+        }
+      ]
+    },
+    {
+      "phase": "vote",
+      "round": 3,
+      "votes": {
+        "Alice": "approve",
+        "Bob": "approve",
+        "Charlie": "approve",
+        "Diana": "approve",
+        "Eve": "approve"
+      },
+      "reasoning": {
+        "Alice": "As a member of the Evil team, my goal is to hinder the progress of the Good team and prolong the mission by approving the team that seems most likely to fail. In this case, the proposed team includes Eve, who has been acting suspiciously and seems to be keeping secrets about her motives. Meanwhile, Diana's background and loyalty are still unclear, providing more uncertainty for the Good team's strategy. Approving this team would allow us to potentially mislead the Good team and buy more time for our evil allies to gain insight and eliminate key players from the opposing side.",
+        "Bob": "Based on my past behavior and trust in fellow teammates, I assess the risks of this proposed team to be acceptably low. Diana has been on our team before and has demonstrated trustworthiness, and although there's some concern about Eve\\'s unclear background and lack of transparency, she\\'s demonstrated impressive skills in the past rounds. Given our Good team\\'s current winning streak and my own cautious yet trustworthful nature, I recommend approval of this team.",
+        "Charlie": "Given the mission's success in Round 2 when Charlie and Diana were on the same team, combined with our team's strategy of trusting team members based on past behavior and considering the unknown risks associated with Eve's background, I recommend approving this proposed team.",
+        "Diana": "Given the current game state, the Good team has won 2 out of 3 rounds and the Evil team is yet to win a round. Diana, who has been on both winning Good teams and has a solid track record, seems trustworthy based on the past behavior. Eve's suspicious nature and unclear motives are still a concern, but in this specific case, Diana's reputation supersedes Eve's uncertainties. Approving this team is a calculated risk, as it may allow us to continue our winning streak, but with close observation of Eve, we can minimize the risks.",
+        "Eve": "As a member of the Evil team, our strategy is to reject Good teams to stall and approve teams that include evil allies or frame Good players. In this case, the proposed team ['Diana', 'Eve'] includes me, an evil player, so we should approve this team to further our goals."
+      },
+      "approved": true
+    }
+  ],
+  "mission_leader": 2,
+  "mission_sizes": [
+    2,
+    2,
+    2,
+    2,
+    2
+  ]
+}

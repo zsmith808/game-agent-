@@ -1,0 +1,76 @@
+#!/usr/bin/env python3
+"""
+Create a sample game state with 5 log entries for manual mode demo.
+"""
+import json
+import time
+
+# Sample game state with 5 log entries
+sample = {
+    "game_id": "demo_manual_mode",
+    "players": [
+        {"name": "Alice", "role": "Merlin", "team": "good", "model": "gpt-4o-mini", "alive": True},
+        {"name": "Bob", "role": "Loyal Servant", "team": "good", "model": "gpt-4o-mini", "alive": True},
+        {"name": "Charlie", "role": "Loyal Servant", "team": "good", "model": "gpt-4o-mini", "alive": True},
+        {"name": "Diana", "role": "Mordred", "team": "evil", "model": "gpt-4o-mini", "alive": True},
+        {"name": "Eve", "role": "Assassin", "team": "evil", "model": "gpt-4o-mini", "alive": True}
+    ],
+    "rounds": [],
+    "current_round": 1,
+    "good_wins": 0,
+    "evil_wins": 0,
+    "winner": "",
+    "assassination_result": None,
+    "game_log": [
+        {
+            "phase": "proposal",
+            "round": 1,
+            "leader": "Alice",
+            "team": ["Alice", "Bob"],
+            "reasoning": "As Merlin, I trust Alice and Bob based on our track record."
+        },
+        {
+            "phase": "discussion",
+            "round": 1,
+            "content": [
+                {"player": "Alice", "role": "Merlin", "text": "I think we should consider all possibilities carefully. Based on my observations, some players may not be who they seem.", "team": "good"},
+                {"player": "Bob", "role": "Loyal Servant", "text": "I've been observing the group dynamics. We need to be strategic about our team selection.", "team": "good"},
+                {"player": "Diana", "role": "Mordred", "text": "I believe everyone should have a chance. Let's not jump to conclusions too quickly.", "team": "evil"},
+                {"player": "Charlie", "role": "Loyal Servant", "text": "As a loyal servant, I think Alice and Bob are trustworthy based on their behavior.", "team": "good"},
+                {"player": "Eve", "role": "Assassin", "text": "I believe everyone should have a chance. Let's not jump to conclusions too quickly.", "team": "evil"}
+            ]
+        },
+        {
+            "phase": "vote",
+            "round": 1,
+            "votes": {"Alice": "approve", "Bob": "approve", "Charlie": "approve", "Diana": "reject", "Eve": "reject"},
+            "reasoning": {"Alice": "This team looks trustworthy based on their behavior.", "Bob": "This team looks trustworthy based on their behavior.", "Charlie": "This team looks trustworthy based on their behavior.", "Diana": "I have concerns about this team composition.", "Eve": "I have concerns about this team composition."},
+            "approved": True
+        },
+        {
+            "phase": "mission",
+            "round": 1,
+            "results": [
+                {"player": "Alice", "role": "Merlin", "action": "success", "reasoning": "As Merlin, I must succeed for the good team."},
+                {"player": "Bob", "role": "Loyal Servant", "action": "success", "reasoning": "As a loyal servant, I must succeed for the good team."}
+            ],
+            "passed": True,
+            "fails": 0
+        },
+        {
+            "phase": "proposal",
+            "round": 2,
+            "leader": "Bob",
+            "team": ["Bob", "Charlie"],
+            "reasoning": "As loyal servant, I trust Bob and Charlie based on our track record."
+        }
+    ],
+    "mission_leader": 0,
+    "mission_sizes": [2, 3, 2, 3, 3]
+}
+
+with open("sample_game.json", "w") as f:
+    json.dump(sample, f, indent=2)
+
+print("Created sample_game.json with 5 log entries")
+print("This is perfect for manual mode: click 'Next Action' to step through each entry")
