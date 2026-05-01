@@ -18,7 +18,11 @@ import random
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from werewolf.lm import LmLog, generate
-from werewolf.prompts import ACTION_PROMPTS_AND_SCHEMAS
+from werewolf.prompts import (
+    ACTION_PROMPTS_AND_SCHEMAS,
+    OBSERVE, OBSERVE_SCHEMA,
+    REASON, REASON_SCHEMA,
+)
 from werewolf.utils import Deserializable
 from werewolf.config import  MAX_DEBATE_TURNS, NUM_PLAYERS
 
@@ -180,28 +184,72 @@ class Player(Deserializable):
         "num_villagers": NUM_PLAYERS - 4, 
     }
 
+  # Injected as a prefix to each action prompt so the model sees its own
+  # reasoning before it has to commit to a decision.
+  _CHAIN_CONTEXT_PREFIX = (
+      "{% if player_notes %}"
+      "YOUR PRIOR ANALYSIS:\n"
+      "Player Notes: {{player_notes}}\n"
+      "Suspicion Ranking: {{suspects}}\n\n"
+      "{% endif %}"
+  )
+
+  def _run_reasoning_chain(self, game_state: Dict[str, Any]) -> Dict[str, str]:
+    """Steps 1 & 2 of the reasoning loop: observe then rank suspects.
+
+    Returns a dict with 'player_notes' and 'suspects' ready to merge into
+    the final action's game_state.
+    """
+    # Step 1 — observe: characterise each remaining player
+    obs_result, _ = generate(
+        OBSERVE,
+        OBSERVE_SCHEMA,
+        game_state,
+        model=self.model,
+        temperature=1.0,
+    )
+    player_notes = obs_result.get("player_notes", "") if obs_result else ""
+
+    # Step 2 — reason: rank suspects using the observations from step 1
+    reason_state = {**game_state, "player_notes": player_notes}
+    reason_result, _ = generate(
+        REASON,
+        REASON_SCHEMA,
+        reason_state,
+        model=self.model,
+        temperature=1.0,
+    )
+    suspects = reason_result.get("suspects", "") if reason_result else ""
+
+    return {"player_notes": player_notes, "suspects": suspects}
+
   def _generate_action(
       self,
       action: str,
       options: Optional[List[str]] = None,
   ) -> tuple[Any | None, LmLog]:
-    """Helper function to generate player actions."""
+    """Runs the 3-step reasoning loop and returns the final action."""
     game_state = self._get_game_state()
     if options:
       game_state["options"] = (", ").join(options)
+
+    # Steps 1 & 2: observe → reason
+    chain_context = self._run_reasoning_chain(game_state)
+    game_state.update(chain_context)
+
+    # Step 3: act — prepend chain context to the existing action prompt
     prompt_template, response_schema = ACTION_PROMPTS_AND_SCHEMAS[action]
+    enriched_prompt = self._CHAIN_CONTEXT_PREFIX + prompt_template
 
     result_key, allowed_values = (
         (action, options)
         if action in ["vote", "remove", "investigate", "protect", "bid"]
         else (None, None)
     )
-
-    # Set temperature based on allowed_values
     temperature = 0.5 if allowed_values else 1.0
 
     return generate(
-        prompt_template,
+        enriched_prompt,
         response_schema,
         game_state,
         model=self.model,

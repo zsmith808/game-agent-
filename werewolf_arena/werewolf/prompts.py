@@ -270,3 +270,55 @@ ACTION_PROMPTS_AND_SCHEMAS = {
     "protect": (PROTECT, PROTECT_SCHEMA),
     "summarize": (SUMMARIZE, SUMMARIZE_SCHEMA),
 }
+
+# ── Multi-step reasoning chain prompts ──────────────────────────────────────
+
+OBSERVE = PREFIX + DEBATE_SO_FAR_THIS_ROUND + """INSTRUCTIONS:
+- Before deciding your next action, review everything you know and write brief notes on each remaining player (excluding yourself).
+- For each player note: key statements or behaviors, how credible they seem, and your current suspicion level (low / medium / high).
+
+```json
+{
+  "reasoning": "string",    // Your thought process as you review each player
+  "player_notes": "string"  // One line per player — 'PlayerName: [behavior summary] | suspicion: low/medium/high'
+}
+```
+"""
+
+OBSERVE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "reasoning": {"type": "string"},
+        "player_notes": {"type": "string"},
+    },
+    "required": ["reasoning", "player_notes"],
+}
+
+REASON = PREFIX + """YOUR PLAYER ASSESSMENTS:
+{{player_notes}}
+
+INSTRUCTIONS:
+- Based on the notes above, reason about who is most likely a Werewolf.
+{% if role == 'Werewolf' -%}
+- Identify which Villagers are gaining influence or threaten your team, and who you could credibly frame.
+{% else -%}
+- Look for patterns: deflecting blame, accusing without evidence, staying suspiciously quiet, or inconsistent stories.
+{% endif %}
+- Rank the remaining players from most to least suspicious.
+
+```json
+{
+  "reasoning": "string",  // Step-by-step logic about who the Werewolves might be
+  "suspects": "string"    // Ordered list — '1. PlayerName – reason; 2. PlayerName – reason; ...'
+}
+```
+"""
+
+REASON_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "reasoning": {"type": "string"},
+        "suspects": {"type": "string"},
+    },
+    "required": ["reasoning", "suspects"],
+}
