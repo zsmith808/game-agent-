@@ -21,8 +21,10 @@ import sys
 import os
 import re
 import openai
+from dotenv import load_dotenv
+load_dotenv()
 
-_tracer_dir = os.environ.get('TRACER_DIR', '/Users/katyaogai/Tracer')
+_tracer_dir = os.environ.get('TRACER_DIR', os.path.join(os.path.dirname(__file__), 'tracer'))
 sys.path.insert(0, _tracer_dir)
 
 from toy_agent import ToyAgent
@@ -118,37 +120,105 @@ DEMO_HANDS = [
     {'hand_score': 12, 'dealer_card': '4',  'expected_action': 'STAND'},  # dealer weak, don't risk bust
 ]
 
-if __name__ == '__main__':
-    print('=== Live demo: 5 hands ===\n')
-    for hand in DEMO_HANDS:
-        initial = {
-            **hand,
-            'strategy': 'cautious',
-            'api_key': os.environ.get('GROQ_API_KEY', ''),
-            'prompt': None,
-            'llm_response': None,
-            'action': None,
-        }
-        result = agent.run_local(initial=initial)
-        correct = result['action'] == result['expected_action']
-        print(f"Hand {result['hand_score']} vs dealer {result['dealer_card']}")
-        print(f"  Expected : {result['expected_action']}")
-        print(f"  Got      : {result['action']}  {'OK' if correct else '*** WRONG (bug fired!) ***'}")
-        print(f"  Reasoning: {result['llm_response'][:300]}")
-        print()
+def make_initial_state(hand):
+    return {
+        **hand,
+        'strategy': 'cautious',
+        'api_key': os.environ.get('GROQ_API_KEY', ''),
+        'prompt': None,
+        'llm_response': None,
+        'action': None,
+    }
 
-    print('=== Generated script (what Tracer will see) ===')
-    print(agent.to_script())
+
+def localize(state):
+    """Run each step individually and report which one produced wrong output."""
+    findings = []
+
+    s1 = build_prompt(state.copy())
+    if 'ACTION: HIT' not in s1['prompt'] and 'ACTION: STAND' not in s1['prompt']:
+        findings.append('build_prompt | LogicError | prompt missing ACTION instruction')
+    else:
+        findings.append('build_prompt | OK        | prompt contains ACTION instruction')
+
+    s2 = call_llm(s1.copy())
+    action_lines = [l for l in s2['llm_response'].splitlines() if l.strip().startswith('ACTION:')]
+    if not action_lines:
+        findings.append('call_llm     | LogicError | LLM response has no ACTION: line')
+        llm_final = ''
+    else:
+        llm_final = action_lines[-1].strip()
+        findings.append(f'call_llm     | OK        | LLM said: "{llm_final}"')
+
+    s3 = parse_action(s2.copy())
+    llm_intended = llm_final.replace('ACTION: ', '') if llm_final else 'UNKNOWN'
+    if s3['action'] != llm_intended and llm_intended != 'UNKNOWN':
+        findings.append(
+            f'parse_action | LogicError | line {inspect.getsourcelines(parse_action)[1] + 12}: '
+            f'extracted "{s3["action"]}" but ACTION: line says "{llm_intended}" '
+            f'-- regex matched chain-of-thought word, not ACTION: line'
+        )
+    else:
+        findings.append(f'parse_action | OK        | correctly extracted "{s3["action"]}" from ACTION: line')
+        if s3['action'] != s3['expected_action']:
+            findings.append(
+                f'             | NOTE      | LLM chose "{s3["action"]}" but strategy expects '
+                f'"{s3["expected_action"]}" -- LLM disagreed with expected strategy, not a parse bug'
+            )
+
+    return findings
+
+
+if __name__ == '__main__':
+    groq_key = os.environ.get('GROQ_API_KEY', '')
+
+    # ── Play 5 hands ──────────────────────────────────────────────────────────
+    print('=' * 60)
+    print('BLACKJACK AGENT  —  5 hands')
+    print('=' * 60)
+    bug_hand = None
+    for hand in DEMO_HANDS:
+        result = agent.run_local(initial=make_initial_state(hand))
+        correct = result['action'] == result['expected_action']
+        status = 'OK' if correct else 'WRONG'
+        print(f"  Hand {result['hand_score']:>2} vs dealer {result['dealer_card']:<2}  |  "
+              f"expected {result['expected_action']:<5}  got {result['action']:<5}  [{status}]")
+        if not correct and bug_hand is None:
+            bug_hand = hand
     print()
 
-    openai_key = os.environ.get('OPENAI_API_KEY')
-    if not openai_key:
-        print('OPENAI_API_KEY not set — skipping Tracer audit.')
+    # ── Tracer audit on the first hand where the bug fired ────────────────────
+    if bug_hand is None:
+        print('No wrong answers this run — bug did not fire.')
         raise SystemExit(0)
 
-    print('=== Tracer audit ===')
-    result_audit = agent.audit_with_tracer(api_key=openai_key)
+    print('=' * 60)
+    print(f"TRACER AUDIT  —  Hand {bug_hand['hand_score']} vs dealer {bug_hand['dealer_card']}")
+    print('=' * 60)
+
+    single_hand_agent = ToyAgent(goal=agent.goal)
+    single_hand_agent.imports = agent.imports
+    single_hand_agent.setup = f"""
+    import os
+    state = {{
+        'hand_score': {bug_hand['hand_score']},
+        'dealer_card': '{bug_hand['dealer_card']}',
+        'strategy': 'cautious',
+        'api_key': os.environ.get('GROQ_API_KEY', ''),
+        'prompt': None,
+        'llm_response': None,
+        'action': None,
+        'expected_action': '{bug_hand['expected_action']}',
+    }}
+    """
+    for step in agent.steps:
+        single_hand_agent.steps.append(step)
+
+    audit_result = single_hand_agent.audit_with_tracer(api_key=groq_key)
     print()
-    print('=== Findings ===')
-    for err in result_audit.errors:
-        print(f'  line {err.lineno}: {err.error_type} -- {err.error_message}')
+    if audit_result.errors:
+        print('Findings:')
+        for err in audit_result.errors:
+            print(f'  line {err.lineno}: {err.error_type} -- {err.error_message}')
+    else:
+        print('No issues detected (bug may not have fired on this LLM call).')
